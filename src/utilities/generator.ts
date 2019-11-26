@@ -1,4 +1,14 @@
-import { GraphQLObjectType, GraphQLSchema, GraphQLString, GraphQLBoolean, GraphQLNonNull, GraphQLList } from 'graphql'
+import {
+  GraphQLObjectType,
+  GraphQLSchema,
+  GraphQLString,
+  GraphQLBoolean,
+  GraphQLNonNull,
+  GraphQLList,
+  GraphQLFloat,
+  GraphQLID,
+  GraphQLInt,
+} from 'graphql'
 import { storage } from '../metadata/storage'
 
 export class Generator {
@@ -9,15 +19,21 @@ export class Generator {
   private types: { [name: string]: GraphQLObjectType } = {}
 
   private scalars = {
-    String: GraphQLString,
     Boolean: GraphQLBoolean,
+    Float: GraphQLFloat,
+    ID: GraphQLID,
+    Int: GraphQLInt,
+    String: GraphQLString,
   }
 
   constructor(defaults?) {
-    this.defaults = defaults || {
+    let predefined = {
       nullable: false,
       nullableList: false,
+      rootQueryTypeName: 'Query',
     }
+
+    this.defaults = { ...predefined, ...defaults }
   }
 
   public createSchema() {
@@ -40,7 +56,7 @@ export class Generator {
     }
 
     return new GraphQLObjectType({
-      name: 'Query',
+      name: this.defaults.rootQueryTypeName,
       fields: () => fields,
     })
   }
@@ -57,39 +73,11 @@ export class Generator {
     }
 
     if (this.scalars[typeName]) {
-      let t = this.scalars[typeName]
-
-      if (!typeMeta.nullable) {
-        t = GraphQLNonNull(t)
-      }
-
-      if (typeMeta.list) {
-        t = GraphQLList(t)
-
-        if (!typeMeta.nullableList) {
-          t = GraphQLNonNull(t)
-        }
-      }
-
-      return t
+      return this.configureType(this.scalars[typeName], typeMeta)
     }
 
     if (this.types[typeName]) {
-      let t: any = this.types[typeName]
-
-      if (!typeMeta.nullable) {
-        t = GraphQLNonNull(t)
-      }
-
-      if (typeMeta.list) {
-        t = GraphQLList(t)
-
-        if (!typeMeta.nullableList) {
-          t = GraphQLNonNull(t)
-        }
-      }
-
-      return t
+      return this.configureType(this.types[typeName], typeMeta)
     }
 
     let fields = {}
@@ -103,20 +91,22 @@ export class Generator {
       fields: () => fields,
     })
 
-    let t: any = this.types[typeName]
+    return this.configureType(this.types[typeName], typeMeta)
+  }
 
-    if (!typeMeta.nullable) {
-      t = GraphQLNonNull(t)
+  private configureType(type, meta) {
+    if (!meta.nullable) {
+      type = GraphQLNonNull(type)
     }
 
-    if (typeMeta.list) {
-      t = GraphQLList(t)
+    if (meta.list) {
+      type = GraphQLList(type)
 
-      if (!typeMeta.nullableList) {
-        t = GraphQLNonNull(t)
+      if (!meta.nullableList) {
+        type = GraphQLNonNull(type)
       }
     }
 
-    return t
+    return type
   }
 }
