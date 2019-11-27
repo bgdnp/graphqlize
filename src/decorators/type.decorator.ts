@@ -1,7 +1,12 @@
 import { storage } from '../metadata/storage'
 
-export function Type(): ClassDecorator {
+type TypeOptions = {
+  name?: string
+  interfaces?: Function[]
+}
+
+export function Type(options?: TypeOptions): ClassDecorator {
   return (constructorFn: any) => {
-    storage.createTypeDefinition(constructorFn)
+    storage.createTypeDefinition(constructorFn, options)
   }
 }
