@@ -9,6 +9,7 @@ import {
   GraphQLID,
   GraphQLInt,
   GraphQLInterfaceType,
+  GraphQLUnionType,
 } from 'graphql'
 import { storage } from '../metadata/storage'
 
@@ -19,6 +20,7 @@ export class Generator {
 
   private types: { [name: string]: GraphQLObjectType } = {}
   private interfaces: { [name: string]: GraphQLInterfaceType } = {}
+  private unions: { [name: string]: GraphQLUnionType } = {}
 
   private scalars = {
     Boolean: GraphQLBoolean,
@@ -100,6 +102,10 @@ export class Generator {
       return cleanType ? this.interfaces[typeName] : this.configureType(this.interfaces[typeName], typeMeta)
     }
 
+    if (this.unions[typeName]) {
+      return cleanType ? this.unions[typeName] : this.configureType(this.unions[typeName], typeMeta)
+    }
+
     if (this.types[typeName]) {
       return cleanType ? this.types[typeName] : this.configureType(this.types[typeName], typeMeta)
     }
@@ -138,7 +144,16 @@ export class Generator {
         fields: () => fields,
       })
 
-      return this.configureType(this.interfaces[typeName], meta)
+      return cleanType ? this.interfaces[typeName] : this.configureType(this.interfaces[typeName], meta)
+    }
+
+    if (this.entities.unions[typeName]) {
+      this.unions[typeName] = new GraphQLUnionType({
+        name: typeName,
+        types: () => this.entities.unions[typeName].types.map(type => this.getType(this.entities.types[type], true)),
+      })
+
+      return cleanType ? this.unions[typeName] : this.configureType(this.unions[typeName], meta)
     }
   }
 

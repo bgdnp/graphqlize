@@ -25,6 +25,15 @@ type TInterfaceDefinitionsMap = {
   [interfaceName: string]: TInterfaceDefinition
 }
 
+type TUnionDefinition = {
+  name: string
+  types: string[]
+}
+
+type TUnionDefinitionsMap = {
+  [unionName: string]: TUnionDefinition
+}
+
 class MetaStorage {
   private query: TTypeDefinition = {
     name: 'Query',
@@ -33,6 +42,7 @@ class MetaStorage {
 
   private types: TTypeDefinitionsMap = {}
   private interfaces: TInterfaceDefinitionsMap = {}
+  private unions: TUnionDefinitionsMap = {}
 
   public addQueryDefinition(name: string, type: string) {
     this.query.fields[name] = {
@@ -63,11 +73,21 @@ class MetaStorage {
     }
   }
 
+  public createUnionDefinition(constructorFn: any, options) {
+    const name: string = options.name || constructorFn.name
+
+    this.unions[name] = {
+      name,
+      types: options.types.map(type => type.name),
+    }
+  }
+
   public getEntities() {
     return {
       query: this.query,
       types: this.types,
       interfaces: this.interfaces,
+      unions: this.unions,
     }
   }
 }
