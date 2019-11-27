@@ -19,7 +19,6 @@ type TTypeDefinitionsMap = {
 type TInterfaceDefinition = {
   name: string
   fields: TFieldDefinitionsMap
-  ownFields: string[]
 }
 
 type TInterfaceDefinitionsMap = {
@@ -41,14 +40,14 @@ class MetaStorage {
     }
   }
 
-  public createTypeDefinition(constructorFn: any, options) {
+  public createTypeDefinition(constructorFn: any, options, parentConstructor?: any) {
     const name: string = options?.name || constructorFn.name
 
     const { __fieldsMap } = new constructorFn()
 
     this.types[name] = {
       name,
-      fields: __fieldsMap,
+      fields: { ...__fieldsMap[parentConstructor.name], ...__fieldsMap[name] },
       interfaces: options?.interfaces?.map(item => ({ type: item.name })),
     }
   }
@@ -60,8 +59,7 @@ class MetaStorage {
 
     this.interfaces[name] = {
       name,
-      fields: __fieldsMap,
-      ownFields: Object.keys(__fieldsMap),
+      fields: __fieldsMap[name],
     }
   }
 

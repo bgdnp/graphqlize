@@ -7,6 +7,8 @@ type TypeOptions = {
 
 export function Type(options?: TypeOptions): ClassDecorator {
   return (constructorFn: any) => {
-    storage.createTypeDefinition(constructorFn, options)
+    const parentConstructor: any = Object.getPrototypeOf(constructorFn)
+
+    storage.createTypeDefinition(constructorFn, options, parentConstructor)
   }
 }

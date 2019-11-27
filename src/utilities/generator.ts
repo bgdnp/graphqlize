@@ -130,9 +130,7 @@ export class Generator {
 
     if (this.entities.interfaces[typeName]) {
       for (let key in this.entities.interfaces[typeName].fields) {
-        if (this.entities.interfaces[typeName].ownFields.indexOf(key) !== -1) {
-          fields[key] = { type: this.getType(this.entities.interfaces[typeName].fields[key]) }
-        }
+        fields[key] = { type: this.getType(this.entities.interfaces[typeName].fields[key]) }
       }
 
       this.interfaces[typeName] = new GraphQLInterfaceType({

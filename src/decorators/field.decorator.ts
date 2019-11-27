@@ -49,11 +49,17 @@ export function Field(typeOrOptions?: Function | [Function] | FieldOptions): Pro
       nullableList = typeOrOptions.nullableList
     }
 
+    const targetName: string = target.constructor.name
+
     if (!target.__fieldsMap) {
       target.__fieldsMap = {}
     }
 
-    target.__fieldsMap[propertyKey] = {
+    if (!target.__fieldsMap[targetName]) {
+      target.__fieldsMap[targetName] = {}
+    }
+
+    target.__fieldsMap[targetName][propertyKey] = {
       type,
       list,
       nullable,
