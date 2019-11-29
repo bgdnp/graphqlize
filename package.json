@@ -4,7 +4,7 @@
   "description": "Write your GraphQL schema in typescript",
   "main": "dist/index.js",
   "scripts": {
-    "dev": "ts-node src/index.ts",
+    "dev": "ts-node dev.ts",
     "test": "npm test"
   },
   "repository": {
