@@ -8,9 +8,12 @@ import {
   GraphQLInt,
   GraphQLNamedType,
   GraphQLSchema,
+  GraphQLNonNull,
+  GraphQLNullableType,
+  GraphQLList,
 } from 'graphql'
 import { storage } from './storage'
-import { TDefinitions, TFieldDefinition, TParameter } from '../typings'
+import { TDefinitions, TFieldDefinition, TParameter, TTypeOptions } from '../typings'
 
 export class Generator {
   private definitions: TDefinitions
@@ -75,13 +78,39 @@ export class Generator {
     }
   }
 
-  private getType(field: TFieldDefinition | TParameter): GraphQLNamedType {
+  private getType(field: TFieldDefinition | TParameter): GraphQLNullableType {
+    let type: GraphQLNullableType
+
     if (this.scalars[field.type]) {
-      return this.scalars[field.type]
+      type = this.scalars[field.type]
     }
 
     if (this.types[field.type]) {
-      return this.types[field.type]
+      type = this.types[field.type]
     }
+
+    return this.processType(type, field.options)
+  }
+
+  private processType(type: GraphQLNullableType, options: TTypeOptions): GraphQLNullableType {
+    if (!options) {
+      return type
+    }
+
+    let processedType: GraphQLNullableType
+
+    if (options.isRequired) {
+      processedType = GraphQLNonNull(type)
+    }
+
+    if (options.isList) {
+      processedType = GraphQLList(processedType)
+
+      if (options.isListRequired) {
+        processedType = GraphQLNonNull(processedType)
+      }
+    }
+
+    return processedType
   }
 }
