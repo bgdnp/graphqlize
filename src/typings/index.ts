@@ -10,8 +10,8 @@ export type TFieldDefinitionsMap = {
 export type TFieldDefinition = {
   name: string
   type: string
-  resolver: Function
-  parameters: TParameter[]
+  resolver?: Function
+  parameters?: TParameter[]
   options?: TTypeOptions
 }
 
@@ -25,6 +25,7 @@ export type TParameter = {
 
 export type TDefinitions = {
   query: TQueryDefinition
+  types: TTypeDefinitionsMap
 }
 
 export type TTypeOptions = {
@@ -43,4 +44,13 @@ export type TParamOptions = {
   type?: Function | [Function]
   nullable?: boolean
   nullableList?: boolean
+}
+
+export type TTypeDefinition = {
+  name: string
+  fields: TFieldDefinitionsMap
+}
+
+export type TTypeDefinitionsMap = {
+  [name: string]: TTypeDefinition
 }

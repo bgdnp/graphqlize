@@ -89,7 +89,25 @@ export class Generator {
       type = this.types[field.type]
     }
 
+    type = type || this.createType(field.type)
+
     return this.processType(type, field.options)
+  }
+
+  private createType(typeName: string): GraphQLNullableType {
+    const fieldsMap = this.definitions.types[typeName].fields
+
+    return new GraphQLObjectType({
+      name: typeName,
+      fields: Object.values(fieldsMap).reduce((fields, field) => {
+        fields[field.name] = {
+          name: field.name,
+          type: this.getType(field),
+        }
+
+        return fields
+      }, {}),
+    })
   }
 
   private processType(type: GraphQLNullableType, options: TTypeOptions): GraphQLNullableType {

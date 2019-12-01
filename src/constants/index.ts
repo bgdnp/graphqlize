@@ -1,3 +1,5 @@
 export const FUNCTION_PARAM_TYPES = 'design:paramtypes'
 export const FUNCTION_RETURN_TYPE = 'design:returntype'
+export const PROPERTY_TYPE = 'design:type'
 export const PARAMETERS_METADATA = 'graphqlize:params:metadata'
+export const TYPE_FIELDS_METADATA = 'graphqlize:fields:metadata'
