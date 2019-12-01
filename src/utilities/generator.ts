@@ -7,7 +7,6 @@ import {
   GraphQLID,
   GraphQLInt,
   GraphQLNamedType,
-  GraphQLField,
   GraphQLSchema,
 } from 'graphql'
 import { storage } from './storage'
@@ -40,27 +39,10 @@ export class Generator {
     const fields: any = {}
 
     for (let name in this.definitions.query.fields) {
-      let args = {}
-
-      this.definitions.query.fields[name].parameters?.map(param => {
-        args[param.name] = {
-          name: param.name,
-          type: this.getType(param),
-        }
-      })
-
       fields[name] = {
         type: this.getType(this.definitions.query.fields[name]),
-        args: args,
-        resolve: (parent, parameters, context) => {
-          const parsedParams = this.definitions.query.fields[name].parameters?.map(param => {
-            if (param.kind === 'param') {
-              return parameters[param.name]
-            }
-          })
-
-          return this.definitions.query.fields[name].resolver(...parsedParams)
-        },
+        args: this.createQueryArguments(name),
+        resolve: this.createQueryResolver(name),
       }
     }
 
@@ -68,6 +50,29 @@ export class Generator {
       name: this.definitions.query.name,
       fields: () => fields,
     })
+  }
+
+  private createQueryArguments(fieldName: string) {
+    return this.definitions.query.fields[fieldName].parameters?.reduce((argsObject, param) => {
+      argsObject[param.name] = {
+        name: param.name,
+        type: this.getType(param),
+      }
+
+      return argsObject
+    }, {})
+  }
+
+  private createQueryResolver(fieldName: string) {
+    return (parent, parameters, context) => {
+      const parsedParams = this.definitions.query.fields[fieldName].parameters?.map(param => {
+        if (param.kind === 'param') {
+          return parameters[param.name]
+        }
+      })
+
+      return this.definitions.query.fields[fieldName].resolver(...parsedParams)
+    }
   }
 
   private getType(field: TFieldDefinition | TParameter): GraphQLNamedType {
