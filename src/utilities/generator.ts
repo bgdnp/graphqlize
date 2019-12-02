@@ -26,7 +26,7 @@ export class Generator {
     Int: GraphQLInt,
     String: GraphQLString,
   }
-  private types: { [name: string]: GraphQLObjectType } = {}
+  private types: { [name: string]: GraphQLNamedType } = {}
 
   createSchema() {
     this.definitions = storage.getDefinitions()
@@ -35,6 +35,7 @@ export class Generator {
 
     return new GraphQLSchema({
       query: this.query,
+      types: Object.values(this.types),
     })
   }
 
@@ -128,7 +129,6 @@ export class Generator {
   }
 
   private createType(typeName: string): GraphQLNullableType {
-    console.log(typeName)
     const fieldsMap = this.definitions.types[typeName].fields
 
     this.types[typeName] = new GraphQLObjectType({

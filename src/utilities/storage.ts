@@ -16,6 +16,14 @@ class MetaDataStorage {
     this.types[typeDefinition.name] = typeDefinition
   }
 
+  public addFieldResolvers(fieldResolvers: { [fieldName: string]: Function }, typeName: string): void {
+    const fieldNames = Object.keys(fieldResolvers)
+
+    fieldNames.forEach(fieldName => {
+      this.types[typeName].fields[fieldName].resolver = fieldResolvers[fieldName]
+    })
+  }
+
   public getDefinitions(): TDefinitions {
     return {
       query: this.query,
