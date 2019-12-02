@@ -6,7 +6,10 @@ export { Parent } from './decorators/parent.decorator'
 export { Context } from './decorators/context.decorator'
 export { Info } from './decorators/info.decorator'
 export { Type } from './decorators/type.decorator'
+export { Interface } from './decorators/interface.decorator'
 export { Field } from './decorators/field.decorator'
+export { Resolver } from './decorators/resolver.decorator'
+export { FieldResolver } from './decorators/field-resolver.decorator'
 
 export { createSchema } from './create-schema'
 

@@ -1,4 +1,12 @@
-import { TQueryDefinition, TFieldDefinition, TDefinitions, TTypeDefinitionsMap, TTypeDefinition } from '../typings'
+import {
+  TQueryDefinition,
+  TFieldDefinition,
+  TDefinitions,
+  TTypeDefinitionsMap,
+  TTypeDefinition,
+  TInterfaceDefinitionsMap,
+  TInterfaceDefinition,
+} from '../typings'
 
 class MetaDataStorage {
   private query: TQueryDefinition = {
@@ -7,6 +15,7 @@ class MetaDataStorage {
   }
 
   private types: TTypeDefinitionsMap = {}
+  private interfaces: TInterfaceDefinitionsMap = {}
 
   public addQueryField(field: TFieldDefinition): void {
     this.query.fields[field.name] = field
@@ -14,6 +23,10 @@ class MetaDataStorage {
 
   public addTypeDefinition(typeDefinition: TTypeDefinition): void {
     this.types[typeDefinition.name] = typeDefinition
+  }
+
+  public addInterfaceDefinition(interfaceDefinition: TInterfaceDefinition): void {
+    this.interfaces[interfaceDefinition.name] = interfaceDefinition
   }
 
   public addFieldResolvers(fieldResolvers: { [fieldName: string]: Function }, typeName: string): void {
@@ -28,6 +41,7 @@ class MetaDataStorage {
     return {
       query: this.query,
       types: this.types,
+      interfaces: this.interfaces,
     }
   }
 }

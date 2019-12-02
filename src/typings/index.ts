@@ -26,6 +26,7 @@ export type TParameter = {
 export type TDefinitions = {
   query: TQueryDefinition
   types: TTypeDefinitionsMap
+  interfaces: TInterfaceDefinitionsMap
 }
 
 export type TTypeOptions = {
@@ -52,5 +53,14 @@ export type TTypeDefinition = {
 }
 
 export type TTypeDefinitionsMap = {
+  [name: string]: TTypeDefinition
+}
+
+export type TInterfaceDefinition = {
+  name: string
+  fields: TFieldDefinitionsMap
+}
+
+export type TInterfaceDefinitionsMap = {
   [name: string]: TTypeDefinition
 }
