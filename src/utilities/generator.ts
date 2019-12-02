@@ -78,6 +78,19 @@ export class Generator {
     }
   }
 
+  private createFieldResolver(typeName: string, fieldName: string) {
+    return (parent, parameters, context) => {
+      const parsedParams =
+        this.definitions.types[typeName].fields[fieldName].parameters?.map(param => {
+          if (param.kind === 'param') {
+            return parameters[param.name]
+          }
+        }) || []
+
+      return this.definitions.types[typeName].fields[fieldName].resolver(...parsedParams)
+    }
+  }
+
   private getType(field: TFieldDefinition | TParameter): GraphQLNullableType {
     let type: GraphQLNullableType
 
@@ -103,6 +116,7 @@ export class Generator {
         fields[field.name] = {
           name: field.name,
           type: this.getType(field),
+          resolve: field.resolver ? this.createFieldResolver(typeName, field.name) : undefined,
         }
 
         return fields
