@@ -97,7 +97,7 @@ export class Generator {
   private createType(typeName: string): GraphQLNullableType {
     const fieldsMap = this.definitions.types[typeName].fields
 
-    return new GraphQLObjectType({
+    this.types[typeName] = new GraphQLObjectType({
       name: typeName,
       fields: Object.values(fieldsMap).reduce((fields, field) => {
         fields[field.name] = {
@@ -108,6 +108,8 @@ export class Generator {
         return fields
       }, {}),
     })
+
+    return this.types[typeName]
   }
 
   private processType(type: GraphQLNullableType, options: TTypeOptions): GraphQLNullableType {
@@ -129,6 +131,6 @@ export class Generator {
       }
     }
 
-    return processedType
+    return processedType || type
   }
 }

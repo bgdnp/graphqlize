@@ -1,11 +1,15 @@
-import { TFieldDefinitionsMap, TTypeOptions } from '../typings'
+import { TFieldDefinitionsMap, TQueryOptions } from '../typings'
 import { TYPE_FIELDS_METADATA, PROPERTY_TYPE } from '../constants'
+import { processQueryOptions } from '../helpers'
 
-export function Field(): PropertyDecorator {
+export function Field(typeOrOptions?: Function | [Function] | TQueryOptions): PropertyDecorator {
+  let { type, options } = processQueryOptions(typeOrOptions)
+
   return (target: any, name: string) => {
     const fields: TFieldDefinitionsMap = Reflect.getOwnMetadata(TYPE_FIELDS_METADATA, target) || {}
-    const type: string = Reflect.getOwnMetadata(PROPERTY_TYPE, target, name).name
-    const options: TTypeOptions = {
+
+    type = type || Reflect.getOwnMetadata(PROPERTY_TYPE, target, name).name
+    options = options || {
       isRequired: true,
       isList: false,
       isListRequired: false,

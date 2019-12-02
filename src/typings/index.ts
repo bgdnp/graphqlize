@@ -35,7 +35,7 @@ export type TTypeOptions = {
 }
 
 export type TQueryOptions = {
-  type: Function | [Function]
+  type?: Function | [Function]
   nullable: boolean
   nullableList?: boolean
 }
