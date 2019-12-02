@@ -57,9 +57,11 @@ export class Generator {
 
   private createQueryArguments(fieldName: string) {
     return this.definitions.query.fields[fieldName].parameters?.reduce((argsObject, param) => {
-      argsObject[param.name] = {
-        name: param.name,
-        type: this.getType(param),
+      if (param.kind === 'param') {
+        argsObject[param.name] = {
+          name: param.name,
+          type: this.getType(param),
+        }
       }
 
       return argsObject
@@ -67,10 +69,19 @@ export class Generator {
   }
 
   private createQueryResolver(fieldName: string) {
-    return (parent, parameters, context) => {
+    return (parent, parameters, context, info) => {
       const parsedParams = this.definitions.query.fields[fieldName].parameters?.map(param => {
-        if (param.kind === 'param') {
-          return parameters[param.name]
+        switch (param.kind) {
+          case 'param':
+            return parameters[param.name]
+          case 'parent':
+            return parent
+          case 'context':
+            return context
+          case 'info':
+            return info
+          default:
+            return undefined
         }
       })
 
@@ -79,11 +90,20 @@ export class Generator {
   }
 
   private createFieldResolver(typeName: string, fieldName: string) {
-    return (parent, parameters, context) => {
+    return (parent, parameters, context, info) => {
       const parsedParams =
         this.definitions.types[typeName].fields[fieldName].parameters?.map(param => {
-          if (param.kind === 'param') {
-            return parameters[param.name]
+          switch (param.kind) {
+            case 'param':
+              return parameters[param.name]
+            case 'parent':
+              return parent
+            case 'context':
+              return context
+            case 'info':
+              return info
+            default:
+              return undefined
           }
         }) || []
 
@@ -108,6 +128,7 @@ export class Generator {
   }
 
   private createType(typeName: string): GraphQLNullableType {
+    console.log(typeName)
     const fieldsMap = this.definitions.types[typeName].fields
 
     this.types[typeName] = new GraphQLObjectType({
