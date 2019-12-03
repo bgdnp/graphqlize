@@ -1,7 +1,7 @@
 import { PARAMETERS_METADATA, FUNCTION_PARAM_TYPES } from '../constants'
-import { TParameter, TParamOptions, TTypeOptions } from '../typings'
+import { TParameter, TParamOptions, TCreateParamOptions } from '../typings'
 
-export function Param(name: string, paramOptions?: TParamOptions): ParameterDecorator {
+export function Param(name: string, paramOptions?: TCreateParamOptions): ParameterDecorator {
   let { type, options } = processOptions(paramOptions)
 
   return (target: any, propertyKey: string, parameterIndex: number) => {
@@ -26,9 +26,9 @@ export function Param(name: string, paramOptions?: TParamOptions): ParameterDeco
   }
 }
 
-function processOptions(paramOptions: TParamOptions): { type: string; options: TTypeOptions } {
+function processOptions(paramOptions: TCreateParamOptions): { type: string; options: TParamOptions } {
   let type: string
-  let options: TTypeOptions
+  let options: TParamOptions
 
   if (paramOptions) {
     if (typeof paramOptions.type === 'function') {

@@ -1,8 +1,8 @@
-import { TQueryOptions, TTypeOptions } from '../typings'
+import { TCreateQueryOptions, TTypeOptions, TFieldOptions } from '../typings'
 
 export function processQueryOptions(
-  typeOrOptions: Function | [Function] | TQueryOptions,
-): { type?: string; options: TTypeOptions } {
+  typeOrOptions: Function | [Function] | TCreateQueryOptions,
+): { type?: string; options: TTypeOptions & TFieldOptions } {
   let type: string
   let options: TTypeOptions
 

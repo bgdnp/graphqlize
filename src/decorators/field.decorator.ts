@@ -1,8 +1,10 @@
-import { TFieldDefinitionsMap, TQueryOptions, TParameter } from '../typings'
+import { TFieldDefinitionsMap, TCreateFieldOptions, TParameter } from '../typings'
 import { TYPE_FIELDS_METADATA, PROPERTY_TYPE, PARAMETERS_METADATA, FUNCTION_RETURN_TYPE } from '../constants'
 import { processQueryOptions } from '../helpers'
 
-export function Field(typeOrOptions?: Function | [Function] | TQueryOptions): MethodDecorator & PropertyDecorator {
+export function Field(
+  typeOrOptions?: Function | [Function] | TCreateFieldOptions,
+): MethodDecorator & PropertyDecorator {
   let { type, options } = processQueryOptions(typeOrOptions)
 
   return (target: any, name: string, descriptor?: any): void => {

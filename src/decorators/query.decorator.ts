@@ -1,9 +1,9 @@
 import { storage } from '../utilities/storage'
 import { FUNCTION_RETURN_TYPE, PARAMETERS_METADATA } from '../constants'
-import { TParameter, TQueryOptions } from '../typings'
+import { TParameter, TCreateQueryOptions } from '../typings'
 import { processQueryOptions } from '../helpers'
 
-export function Query(typeOrOptions?: Function | [Function] | TQueryOptions): MethodDecorator {
+export function Query(typeOrOptions?: Function | [Function] | TCreateQueryOptions): MethodDecorator {
   let { type, options } = processQueryOptions(typeOrOptions)
 
   return (target: any, propertyKey: string) => {
