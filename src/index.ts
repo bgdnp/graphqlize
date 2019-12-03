@@ -10,6 +10,7 @@ export { Interface } from './decorators/interface.decorator'
 export { Field } from './decorators/field.decorator'
 export { Resolver } from './decorators/resolver.decorator'
 export { FieldResolver } from './decorators/field-resolver.decorator'
+export { ResolveType } from './decorators/resolve-type.decorator'
 
 export { createSchema } from './create-schema'
 

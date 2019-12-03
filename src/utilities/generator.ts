@@ -16,6 +16,7 @@ import {
 } from 'graphql'
 import { storage } from './storage'
 import { TDefinitions, TFieldDefinition, TParameter, TTypeOptions } from '../typings'
+import { RESOLVE_TYPE_METADATA } from '../constants'
 
 export class Generator {
   private definitions: TDefinitions
@@ -119,6 +120,33 @@ export class Generator {
     }
   }
 
+  private createTypeResolver(typeName: string) {
+    return (parent, parameters, context, info) => {
+      const parsedParams =
+        this.definitions.interfaces[typeName].parameters?.map(param => {
+          switch (param.kind) {
+            case 'param':
+              return parameters[param.name]
+            case 'parent':
+              return parent
+            case 'context':
+              return context
+            case 'info':
+              return info
+            default:
+              return undefined
+          }
+        }) || []
+
+      const resolvedTypeName: string = this.definitions.interfaces[typeName].resolver(...parsedParams).name
+
+      return this.getType({
+        name: resolvedTypeName,
+        type: resolvedTypeName,
+      }) as GraphQLObjectType
+    }
+  }
+
   private getType(field: TFieldDefinition | TParameter): GraphQLNullableType {
     let type: GraphQLNullableType
 
@@ -161,6 +189,7 @@ export class Generator {
 
         return fields
       }, {}),
+      resolveType: this.createTypeResolver(interfaceName),
     })
 
     return this.interfaces[interfaceName]
