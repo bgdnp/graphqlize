@@ -12,6 +12,7 @@ import {
   GraphQLNullableType,
   GraphQLList,
   GraphQLInterfaceType,
+  GraphQLObjectTypeConfig,
 } from 'graphql'
 import { storage } from './storage'
 import { TDefinitions, TFieldDefinition, TParameter, TTypeOptions } from '../typings'
@@ -166,20 +167,43 @@ export class Generator {
   }
 
   private createType(typeName: string): GraphQLNullableType {
-    const fieldsMap = this.definitions.types[typeName].fields
+    let inheritedFields = {}
 
-    this.types[typeName] = new GraphQLObjectType({
-      name: typeName,
-      fields: Object.values(fieldsMap).reduce((fields, field) => {
+    const interfaces = this.definitions.types[typeName].interfaces.map(interfaceName => {
+      const interfaceType = this.getType({
+        name: interfaceName,
+        type: interfaceName,
+      }) as GraphQLInterfaceType
+
+      inheritedFields = Object.values(interfaceType.getFields()).reduce((fields, field) => {
         fields[field.name] = {
           name: field.name,
-          type: this.getType(field),
-          resolve: field.resolver ? this.createFieldResolver(typeName, field.name) : undefined,
+          type: field.type,
         }
 
         return fields
-      }, {}),
+      }, inheritedFields)
+
+      return interfaceType
     })
+
+    const fields = Object.values(this.definitions.types[typeName].fields).reduce((fields, field) => {
+      fields[field.name] = {
+        name: field.name,
+        type: this.getType(field),
+        resolve: field.resolver ? this.createFieldResolver(typeName, field.name) : undefined,
+      }
+
+      return fields
+    }, inheritedFields)
+
+    const config: GraphQLObjectTypeConfig<any, any, any> = {
+      name: typeName,
+      fields,
+      interfaces,
+    }
+
+    this.types[typeName] = new GraphQLObjectType(config)
 
     return this.types[typeName]
   }
