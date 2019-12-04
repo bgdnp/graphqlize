@@ -14,6 +14,7 @@ import {
   GraphQLInterfaceType,
   GraphQLObjectTypeConfig,
   GraphQLUnionType,
+  GraphQLInputObjectType,
 } from 'graphql'
 import { storage } from './storage'
 import { TDefinitions, TFieldDefinition, TParameter, TTypeOptions } from '../typings'
@@ -33,6 +34,7 @@ export class Generator {
   private types: { [name: string]: GraphQLNamedType } = {}
   private interfaces: { [name: string]: GraphQLNamedType } = {}
   private unions: { [name: string]: GraphQLNamedType } = {}
+  private inputs: { [name: string]: GraphQLNamedType } = {}
 
   createSchema() {
     this.definitions = storage.getDefinitions()
@@ -190,6 +192,10 @@ export class Generator {
       type = this.unions[field.type]
     }
 
+    if (this.inputs[field.type]) {
+      type = this.inputs[field.type]
+    }
+
     if (this.types[field.type]) {
       type = this.types[field.type]
     }
@@ -206,6 +212,10 @@ export class Generator {
 
     if (this.definitions.unions[name]) {
       return this.createUnion(name)
+    }
+
+    if (this.definitions.inputs[name]) {
+      return this.createInput(name)
     }
 
     return this.createType(name)
@@ -286,6 +296,24 @@ export class Generator {
     this.types[typeName] = new GraphQLObjectType(config)
 
     return this.types[typeName]
+  }
+
+  private createInput(inputName: string): GraphQLNullableType {
+    const fields = Object.values(this.definitions.inputs[inputName].fields).reduce((fields, field) => {
+      fields[field.name] = {
+        name: field.name,
+        type: this.getType(field),
+      }
+
+      return fields
+    }, {})
+
+    this.inputs[inputName] = new GraphQLInputObjectType({
+      name: inputName,
+      fields,
+    })
+
+    return this.inputs[inputName]
   }
 
   private processType(type: GraphQLNullableType, options: TTypeOptions): GraphQLNullableType {

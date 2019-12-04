@@ -6,6 +6,8 @@ import {
   TTypeDefinition,
   TInterfaceDefinitionsMap,
   TInterfaceDefinition,
+  TInputDefinition,
+  TInputDefinitionsMap,
 } from '../typings'
 import { TUnionDefinitionsMap, TUnionDefinition } from '../typings/union'
 
@@ -22,6 +24,7 @@ class MetaDataStorage {
   private types: TTypeDefinitionsMap = {}
   private interfaces: TInterfaceDefinitionsMap = {}
   private unions: TUnionDefinitionsMap = {}
+  private inputs: TInputDefinitionsMap = {}
 
   public addQueryField(field: TFieldDefinition): void {
     this.query.fields[field.name] = field
@@ -43,6 +46,10 @@ class MetaDataStorage {
     this.unions[unionDefinition.name] = unionDefinition
   }
 
+  public addInputDefinition(inputDefinition: TInputDefinition): void {
+    this.inputs[inputDefinition.name] = inputDefinition
+  }
+
   public addFieldResolvers(fieldResolvers: { [fieldName: string]: Function }, typeName: string): void {
     const fieldNames = Object.keys(fieldResolvers)
 
@@ -58,6 +65,7 @@ class MetaDataStorage {
       types: this.types,
       interfaces: this.interfaces,
       unions: this.unions,
+      inputs: this.inputs,
     }
   }
 }
