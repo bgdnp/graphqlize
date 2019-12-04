@@ -22,6 +22,7 @@ export class Generator {
   private definitions: TDefinitions
 
   private query: GraphQLObjectType
+  private mutation: GraphQLObjectType
   private scalars: { [name: string]: GraphQLScalarType } = {
     Boolean: GraphQLBoolean,
     Float: GraphQLFloat,
@@ -37,10 +38,12 @@ export class Generator {
     this.definitions = storage.getDefinitions()
 
     this.createQuery()
+    this.createMutation()
     this.createTypes()
 
     return new GraphQLSchema({
       query: this.query,
+      mutation: this.mutation,
       types: Object.values({
         ...this.types,
         ...this.interfaces,
@@ -66,8 +69,27 @@ export class Generator {
     })
   }
 
+  private createMutation() {
+    const fields: any = {}
+
+    for (let name in this.definitions.mutation.fields) {
+      fields[name] = {
+        type: this.getType(this.definitions.mutation.fields[name]),
+        args: this.createQueryArguments(name),
+        resolve: this.createQueryResolver(name),
+      }
+    }
+
+    this.mutation = new GraphQLObjectType({
+      name: this.definitions.mutation.name,
+      fields: () => fields,
+    })
+  }
+
   private createQueryArguments(fieldName: string) {
-    return this.definitions.query.fields[fieldName].parameters?.reduce((argsObject, param) => {
+    const definition = this.definitions.query.fields[fieldName] || this.definitions.mutation.fields[fieldName]
+
+    return definition.parameters?.reduce((argsObject, param) => {
       if (param.kind === 'param') {
         argsObject[param.name] = {
           name: param.name,
@@ -81,7 +103,9 @@ export class Generator {
 
   private createQueryResolver(fieldName: string) {
     return (parent, parameters, context, info) => {
-      const parsedParams = this.definitions.query.fields[fieldName].parameters?.map(param => {
+      const definition = this.definitions.query.fields[fieldName] || this.definitions.mutation.fields[fieldName]
+
+      const parsedParams = definition.parameters?.map(param => {
         switch (param.kind) {
           case 'param':
             return parameters[param.name]
@@ -96,7 +120,7 @@ export class Generator {
         }
       })
 
-      return this.definitions.query.fields[fieldName].resolver(...parsedParams)
+      return definition.resolver(...parsedParams)
     }
   }
 
