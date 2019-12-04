@@ -13,10 +13,10 @@ import {
   GraphQLList,
   GraphQLInterfaceType,
   GraphQLObjectTypeConfig,
+  GraphQLUnionType,
 } from 'graphql'
 import { storage } from './storage'
 import { TDefinitions, TFieldDefinition, TParameter, TTypeOptions } from '../typings'
-import { RESOLVE_TYPE_METADATA } from '../constants'
 
 export class Generator {
   private definitions: TDefinitions
@@ -31,6 +31,7 @@ export class Generator {
   }
   private types: { [name: string]: GraphQLNamedType } = {}
   private interfaces: { [name: string]: GraphQLNamedType } = {}
+  private unions: { [name: string]: GraphQLNamedType } = {}
 
   createSchema() {
     this.definitions = storage.getDefinitions()
@@ -43,6 +44,7 @@ export class Generator {
       types: Object.values({
         ...this.types,
         ...this.interfaces,
+        ...this.unions,
       }),
     })
   }
@@ -122,8 +124,10 @@ export class Generator {
 
   private createTypeResolver(typeName: string) {
     return (parent, parameters, context, info) => {
+      const definition = this.definitions.interfaces[typeName] || this.definitions.unions[typeName]
+
       const parsedParams =
-        this.definitions.interfaces[typeName].parameters?.map(param => {
+        definition.parameters?.map(param => {
           switch (param.kind) {
             case 'param':
               return parameters[param.name]
@@ -138,7 +142,7 @@ export class Generator {
           }
         }) || []
 
-      const resolvedTypeName: string = this.definitions.interfaces[typeName].resolver(...parsedParams).name
+      const resolvedTypeName: string = definition.resolver(...parsedParams).name
 
       return this.getType({
         name: resolvedTypeName,
@@ -158,6 +162,10 @@ export class Generator {
       type = this.interfaces[field.type]
     }
 
+    if (this.unions[field.type]) {
+      type = this.unions[field.type]
+    }
+
     if (this.types[field.type]) {
       type = this.types[field.type]
     }
@@ -170,6 +178,10 @@ export class Generator {
   private createObject(name: string): GraphQLNullableType {
     if (this.definitions.interfaces[name]) {
       return this.createInterface(name)
+    }
+
+    if (this.definitions.unions[name]) {
+      return this.createUnion(name)
     }
 
     return this.createType(name)
@@ -193,6 +205,21 @@ export class Generator {
     })
 
     return this.interfaces[interfaceName]
+  }
+
+  private createUnion(unionName: string): GraphQLNullableType {
+    this.unions[unionName] = new GraphQLUnionType({
+      name: unionName,
+      types: this.definitions.unions[unionName].types.map(type => {
+        return this.getType({
+          name: type.name,
+          type: type.name,
+        }) as GraphQLObjectType
+      }),
+      resolveType: this.createTypeResolver(unionName),
+    })
+
+    return this.unions[unionName]
   }
 
   private createType(typeName: string): GraphQLNullableType {

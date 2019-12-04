@@ -7,6 +7,7 @@ import {
   TInterfaceDefinitionsMap,
   TInterfaceDefinition,
 } from '../typings'
+import { TUnionDefinitionsMap, TUnionDefinition } from '../typings/union'
 
 class MetaDataStorage {
   private query: TQueryDefinition = {
@@ -16,6 +17,7 @@ class MetaDataStorage {
 
   private types: TTypeDefinitionsMap = {}
   private interfaces: TInterfaceDefinitionsMap = {}
+  private unions: TUnionDefinitionsMap = {}
 
   public addQueryField(field: TFieldDefinition): void {
     this.query.fields[field.name] = field
@@ -27,6 +29,10 @@ class MetaDataStorage {
 
   public addInterfaceDefinition(interfaceDefinition: TInterfaceDefinition): void {
     this.interfaces[interfaceDefinition.name] = interfaceDefinition
+  }
+
+  public addUnionDefinition(unionDefinition: TUnionDefinition): void {
+    this.unions[unionDefinition.name] = unionDefinition
   }
 
   public addFieldResolvers(fieldResolvers: { [fieldName: string]: Function }, typeName: string): void {
@@ -42,6 +48,7 @@ class MetaDataStorage {
       query: this.query,
       types: this.types,
       interfaces: this.interfaces,
+      unions: this.unions,
     }
   }
 }
