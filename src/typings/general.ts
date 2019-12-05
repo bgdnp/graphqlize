@@ -12,3 +12,8 @@ export type TDefinitions = {
   unions: TUnionDefinitionsMap
   inputs: TInputDefinitionsMap
 }
+
+export type TCreateSchemaOptions = {
+  resolvers?: Function[]
+  rootTypes?: Function[]
+}
