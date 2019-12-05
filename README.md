@@ -1,6 +1,24 @@
-# graphqool
+# @bgdn/graphqlize
 
 Write your GraphQL schema in typescript
+
+## Table of contents
+
+- [Introduction](#introduction)
+- [Instalation](#instalation)
+- [Usage](#usage)
+  - [Types](#types)
+  - [Scalar types](#scalar-types)
+  - [Interfaces](#interfaces)
+  - [Unions](#unions)
+  - [Resolvers](#resolvers)
+    - [Resolver classes](#resolver-classes)
+    - [Adding queries to resolver classes](#adding-queries-to-resolver-classes)
+    - [Query parameters](#query-parameters)
+    - [Field resolvers](#field-resolvers)
+    - [Inline field resolvers](#inline-field-resolvers)
+    - [Mutations](#mutations)
+  - [Building schema](#building-schema)
 
 ## Introduction
 
@@ -9,7 +27,7 @@ Graphqlize is a library which provides wrapper around [graphql](https://www.npmj
 ## Installation
 
 ```
-npm install --save grapheine`
+npm install --save @bgdn/graphqlize`
 ```
 
 ## Usage
@@ -21,7 +39,7 @@ To create graphql type decorate a class with `@Type()` decorator factory. Also d
 > User.ts
 >
 > ```ts
-> import { Type, Field, Int } from 'grapheine'
+> import { Type, Field, Int } from '@bgdn/graphqlize'
 >
 > @Type()
 > export class User {
@@ -33,8 +51,6 @@ To create graphql type decorate a class with `@Type()` decorator factory. Also d
 > }
 > ```
 
-#### Type options
-
 `@Type()` decorator factory accepts one parameter which can either be string representing the name of the type or configuration object. This parameter is optional and if not present name of the class will be used as type name. Configuration object accepts to properties:
 
 - `name: string` - representing type name
@@ -45,7 +61,7 @@ For example, we change User class name to UserTypeDefinition, but we still want 
 > User.ts
 >
 > ```ts
-> import { Type, Field, Int } from 'grapheine'
+> import { Type, Field, Int } from '@bgdn/graphqlize'
 > import { Person } from './Person'
 >
 > @Type({
@@ -60,8 +76,6 @@ For example, we change User class name to UserTypeDefinition, but we still want 
 >   age: Int
 > }
 > ```
-
-#### Field options
 
 Like types, fields also accept one parameter which can be type class or configuration options. Examples:
 
@@ -110,22 +124,22 @@ numbers: Float[]
 // Will output: number: [Float!]
 ```
 
-## Scalar types
+### Scalar types
 
-For string and boolean you can use native javascript classes String or Boolean as types, or just set field type as `string` or `boolean`. Since typescript provide just Number class and graphql use Int and Float types, grapheine provides classes for those types and also for ID. Just import and use them.
+For string and boolean you can use native javascript classes String or Boolean as types, or just set field type as `string` or `boolean`. Since typescript provide just Number class and graphql use Int and Float types, @bgdn/graphqlize provides classes for those types and also for ID. Just import and use them.
 
 ```ts
-import { Int, Float, ID } from 'grapheine'
+import { Int, Float, ID } from '@bgdn/graphqlize'
 ```
 
-## Interfaces
+### Interfaces
 
 Similar as type, interfaces are created using `@Interface()` decorator factory on a class.
 
 > Person.ts
 >
 > ```ts
-> import { Interface, Field } from 'grapheine'
+> import { Interface, Field } from '@bgdn/graphqlize'
 >
 > @Interface()
 > export class Person {
@@ -142,7 +156,7 @@ As interfaces are defined as typescript classes they are extendable by types.
 > User.ts
 >
 > ```ts
-> import { Type, Field, Int } from 'grapheine'
+> import { Type, Field, Int } from '@bgdn/graphqlize'
 > import { Person } from './Person'
 >
 > @Type({
@@ -159,7 +173,7 @@ Interfaces in graphql needs to resolve needs to be resolved to specific type. Us
 > Person.ts
 >
 > ```ts
-> import { Interface, Field, ResolveType } from 'grapheine'
+> import { Interface, Field, ResolveType } from '@bgdn/graphqlize'
 > import { User } from './User'
 >
 > @Interface()
@@ -181,14 +195,14 @@ Interfaces in graphql needs to resolve needs to be resolved to specific type. Us
 
 This is basic example. More about resolver methods in resolvers section.
 
-## Unions
+### Unions
 
 Unions, unlike interfaces, can't contain fields, instead they just requires a list of types to include in a union. Like interfaces, unions need `@ResolveType()` decorated type resolver.
 
 > Entry.ts
 >
 > ```ts
-> import { Union, ResolveType } from 'grapheine'
+> import { Union, ResolveType } from '@bgdn/graphqlize'
 > import { Post } from './Post'
 > import { Page } from './Page'
 >
@@ -209,7 +223,7 @@ Unions, unlike interfaces, can't contain fields, instead they just requires a li
 
 Besides types, Union configuration object can accept optional `name`. If name is ommited class name will be used.
 
-## Resolvers
+### Resolvers
 
 #### Resolver classes
 
@@ -218,7 +232,7 @@ Decorate a class with `@Resolver()` to declare it as resolver class. Decorator f
 > UserResolver.ts
 >
 > ```ts
-> import { Resolver } from 'grapheine'
+> import { Resolver } from '@bgdn/graphqlize'
 > import { User } from './User'
 >
 > @Resolver(User)
@@ -232,7 +246,7 @@ Let's add our first query to the UserResolver. To do it decorate a method with `
 > UserResolver.ts
 >
 > ```ts
-> import { Resolver, Query } from 'grapheine'
+> import { Resolver, Query } from '@bgdn/graphqlize'
 > import { User } from './User'
 >
 > @Resolver(User)
@@ -256,7 +270,7 @@ Use `@Param('param_name')` decorator to add parameter as a query. Parameter name
 > UserResolver.ts
 >
 > ```ts
-> import { Resolver, Query, Param } from 'grapheine'
+> import { Resolver, Query, Param } from '@bgdn/graphqlize'
 > import { User } from './User'
 >
 > @Resolver(User)
@@ -283,7 +297,7 @@ Use `@Param('param_name')` decorator to add parameter as a query. Parameter name
 Use `FieldResolver()` to resolve resolve fields. For example if we want user name to be all caps.
 
 > ```ts
-> import { Resolver, Query, Param, FieldResolver, Parent } from 'grapheine'
+> import { Resolver, Query, Param, FieldResolver, Parent } from '@bgdn/graphqlize'
 > import { User } from './User'
 >
 > @Resolver(User)
@@ -336,12 +350,12 @@ However, inline resolvers are not recommended way of adding resolver functions.
 
 Mutations are defined same as queries. just use `@Mutation()` instead of `@Query()`
 
-## Creating schema
+### Building schema
 
 After defining schema use `createSchema` function to build schema.
 
 ```ts
-import { createSchema } from 'grapheine'
+import { createSchema } from '@bgdn/graphqlize'
 import { UserResolver } from './resolvers/UserResolver'
 
 const schema = createSchema({
