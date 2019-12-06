@@ -5,6 +5,7 @@ Write your GraphQL schema in typescript
 ## Table of contents
 
 - [Introduction](#introduction)
+- [Work in progress](#work-in-progress)
 - [Instalation](#instalation)
 - [Usage](#usage)
   - [Types](#types)
@@ -23,6 +24,17 @@ Write your GraphQL schema in typescript
 ## Introduction
 
 Graphqlize is a library which provides wrapper around [graphql](https://www.npmjs.com/package/graphql) package and allows you too code your graphql schema using typescript. It is inspired by [type-graphql](https://typegraphql.ml/), and includes some changes which solves some problems I had with type-graphql.
+
+## Work in progress:
+
+This is the preliminary version of the package, so some things are not fully supported. This is the list of things currently in development:
+
+- Types inheritance
+- Subscriptions
+- More options for createSchema
+- Better error handling
+
+Anyone is welcome to point out an issue or suggest feature or improvement.
 
 ## Installation
 
