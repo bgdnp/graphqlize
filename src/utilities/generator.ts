@@ -71,7 +71,11 @@ export class Generator {
     })
   }
 
-  private createMutation() {
+  private createMutation(): GraphQLObjectType {
+    if (!this.definitions.mutation.fields) {
+      return
+    }
+
     const fields: any = {}
 
     for (let name in this.definitions.mutation.fields) {

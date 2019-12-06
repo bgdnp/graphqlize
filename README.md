@@ -39,7 +39,7 @@ Anyone is welcome to point out an issue or suggest feature or improvement.
 ## Installation
 
 ```
-npm install --save @bgdn/graphqlize`
+npm install --save @bgdn/graphqlize
 ```
 
 ## Usage
