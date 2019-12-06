@@ -72,7 +72,7 @@ export class Generator {
   }
 
   private createMutation(): GraphQLObjectType {
-    if (!this.definitions.mutation.fields) {
+    if (Object.keys(this.definitions.mutation.fields).length === 0) {
       return
     }
 
