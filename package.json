@@ -1,28 +1,36 @@
 {
-  "name": "graphqlize",
-  "version": "0.1.0",
+  "name": "@bgdn/graphqlize",
+  "version": "1.0.0",
   "description": "Write your GraphQL schema in typescript",
   "main": "dist/index.js",
+  "files": [
+    "LICENSE",
+    "README.md",
+    "/dist"
+  ],
   "scripts": {
+    "build": "tsc",
     "dev": "ts-node dev.ts",
-    "test": "npm test"
+    "test": "echo \"No tests yet.\" && exit 0"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/phpoenix/graphqlize.git"
+    "url": "git+https://github.com/bgdnp/graphqlize.git"
   },
   "keywords": [
     "graphql",
     "typescript",
     "code",
-    "first"
+    "first",
+    "schema",
+    "generator"
   ],
   "author": "Bogdan Petkovic <bogdanpetkovic@outlook.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/phpoenix/graphqlize/issues"
+    "url": "https://github.com/bgdnp/graphqlize/issues"
   },
-  "homepage": "https://github.com/phpoenix/graphqlize#readme",
+  "homepage": "https://github.com/bgdnp/graphqlize#readme",
   "dependencies": {
     "graphql": "^14.5.8",
     "reflect-metadata": "^0.1.13"
