@@ -237,15 +237,18 @@ export class Generator {
 
     this.interfaces[interfaceName] = new GraphQLInterfaceType({
       name: interfaceName,
-      fields: Object.values(fieldsMap).reduce((fields, field) => {
-        fields[field.name] = {
-          name: field.name,
-          type: this.getType(field),
-          resolve: field.resolver ? this.createFieldResolver(interfaceName, field.name) : undefined,
-        }
+      fields: () =>
+        Object.values(fieldsMap).reduce((fields, field) => {
+          fields[field.name] = {
+            name: field.name,
+            type:
+              this.getType(field) ||
+              this.processType(this[this.inBuildingProcess[field.type]][field.type], field.options),
+            resolve: field.resolver ? this.createFieldResolver(interfaceName, field.name) : undefined,
+          }
 
-        return fields
-      }, {}),
+          return fields
+        }, {}),
       resolveType: this.createTypeResolver(interfaceName),
     })
 
@@ -259,12 +262,15 @@ export class Generator {
 
     this.unions[unionName] = new GraphQLUnionType({
       name: unionName,
-      types: this.definitions.unions[unionName].types.map(type => {
-        return this.getType({
-          name: type.name,
-          type: type.name,
-        }) as GraphQLObjectType
-      }),
+      types: () =>
+        this.definitions.unions[unionName].types.map(type => {
+          return (
+            (this.getType({
+              name: type.name,
+              type: type.name,
+            }) as GraphQLObjectType) || this[this.inBuildingProcess[type.name]][type.name]
+          )
+        }),
       resolveType: this.createTypeResolver(unionName),
     })
 
