@@ -13,7 +13,7 @@ export type TFieldDefinition = {
 }
 
 export type TCreateFieldOptions = {
-  type?: Function | [Function]
+  type?: string | Function | [Function]
   nullable: boolean
   nullableList?: boolean
 }

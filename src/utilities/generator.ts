@@ -21,6 +21,7 @@ import { TDefinitions, TFieldDefinition, TParameter, TTypeOptions } from '../typ
 
 export class Generator {
   private definitions: TDefinitions
+  private inBuildingProcess: { [name: string]: string } = {}
 
   private query: GraphQLObjectType
   private mutation: GraphQLObjectType
@@ -182,6 +183,10 @@ export class Generator {
   }
 
   private getType(field: TFieldDefinition | TParameter): GraphQLNullableType {
+    if (this.inBuildingProcess[field.type]) {
+      return
+    }
+
     let type: GraphQLNullableType
 
     if (this.scalars[field.type]) {
@@ -226,6 +231,8 @@ export class Generator {
   }
 
   private createInterface(interfaceName: string): GraphQLNullableType {
+    this.inBuildingProcess[interfaceName] = 'interfaces'
+
     const fieldsMap = this.definitions.interfaces[interfaceName].fields
 
     this.interfaces[interfaceName] = new GraphQLInterfaceType({
@@ -242,10 +249,14 @@ export class Generator {
       resolveType: this.createTypeResolver(interfaceName),
     })
 
+    delete this.inBuildingProcess[interfaceName]
+
     return this.interfaces[interfaceName]
   }
 
   private createUnion(unionName: string): GraphQLNullableType {
+    this.inBuildingProcess[unionName] = 'unions'
+
     this.unions[unionName] = new GraphQLUnionType({
       name: unionName,
       types: this.definitions.unions[unionName].types.map(type => {
@@ -257,10 +268,14 @@ export class Generator {
       resolveType: this.createTypeResolver(unionName),
     })
 
+    delete this.inBuildingProcess[unionName]
+
     return this.unions[unionName]
   }
 
   private createType(typeName: string): GraphQLNullableType {
+    this.inBuildingProcess[typeName] = 'types'
+
     let inheritedFields = {}
 
     const interfaces = this.definitions.types[typeName].interfaces.map(interfaceName => {
@@ -281,15 +296,18 @@ export class Generator {
       return interfaceType
     })
 
-    const fields = Object.values(this.definitions.types[typeName].fields).reduce((fields, field) => {
-      fields[field.name] = {
-        name: field.name,
-        type: this.getType(field),
-        resolve: field.resolver ? this.createFieldResolver(typeName, field.name) : undefined,
-      }
+    const fields = () =>
+      Object.values(this.definitions.types[typeName].fields).reduce((fields, field) => {
+        fields[field.name] = {
+          name: field.name,
+          type:
+            this.getType(field) ||
+            this.processType(this[this.inBuildingProcess[field.type]][field.type], field.options),
+          resolve: field.resolver ? this.createFieldResolver(typeName, field.name) : undefined,
+        }
 
-      return fields
-    }, inheritedFields)
+        return fields
+      }, inheritedFields)
 
     const config: GraphQLObjectTypeConfig<any, any, any> = {
       name: typeName,
@@ -298,6 +316,8 @@ export class Generator {
     }
 
     this.types[typeName] = new GraphQLObjectType(config)
+
+    delete this.inBuildingProcess[typeName]
 
     return this.types[typeName]
   }

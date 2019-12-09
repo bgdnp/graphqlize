@@ -1,12 +1,19 @@
 import { TCreateQueryOptions, TTypeOptions, TFieldOptions } from '../typings'
 
 export function processQueryOptions(
-  typeOrOptions: Function | [Function] | TCreateQueryOptions,
+  typeOrOptions: string | Function | [Function] | TCreateQueryOptions,
 ): { type?: string; options: TTypeOptions & TFieldOptions } {
   let type: string
   let options: TTypeOptions
 
-  if (typeof typeOrOptions === 'function') {
+  if (typeof typeOrOptions === 'string') {
+    type = typeOrOptions.replace(/\[|\]/g, '')
+    options = {
+      isRequired: true,
+      isList: /\[.*\]/.test(typeOrOptions),
+      isListRequired: /\[.*\]/.test(typeOrOptions),
+    }
+  } else if (typeof typeOrOptions === 'function') {
     type = typeOrOptions.name
     options = {
       isRequired: true,
@@ -21,7 +28,14 @@ export function processQueryOptions(
       isListRequired: true,
     }
   } else if (typeof typeOrOptions === 'object') {
-    if (typeof typeOrOptions.type === 'function') {
+    if (typeof typeOrOptions.type === 'string') {
+      type = typeOrOptions.type
+      options = {
+        isRequired: !typeOrOptions.nullable,
+        isList: /\[.*\]/.test(typeOrOptions.type),
+        isListRequired: !typeOrOptions.nullableList,
+      }
+    } else if (typeof typeOrOptions.type === 'function') {
       type = typeOrOptions.type.name
       options = {
         isRequired: !typeOrOptions.nullable,

@@ -3,7 +3,7 @@ import { TYPE_FIELDS_METADATA, PROPERTY_TYPE, PARAMETERS_METADATA, FUNCTION_RETU
 import { processQueryOptions } from '../helpers'
 
 export function Field(
-  typeOrOptions?: Function | [Function] | TCreateFieldOptions,
+  typeOrOptions?: string | Function | [Function] | TCreateFieldOptions,
 ): MethodDecorator & PropertyDecorator {
   let { type, options } = processQueryOptions(typeOrOptions)
 

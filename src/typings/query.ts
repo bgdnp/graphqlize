@@ -6,7 +6,7 @@ export type TQueryDefinition = {
 }
 
 export type TCreateQueryOptions = {
-  type?: Function | [Function]
+  type?: string | Function | [Function]
   nullable: boolean
   nullableList?: boolean
 }
