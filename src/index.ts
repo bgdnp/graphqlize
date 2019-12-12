@@ -19,3 +19,5 @@ export { createSchema } from './create-schema'
 export class Int extends Number {}
 export class Float extends Number {}
 export class ID extends String {}
+
+export { printSchema } from 'graphql'
