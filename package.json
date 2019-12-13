@@ -1,6 +1,6 @@
 {
   "name": "@bgdn/graphqlize",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Write your GraphQL schema in typescript",
   "main": "dist/index.js",
   "files": [
