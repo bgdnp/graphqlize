@@ -16,4 +16,5 @@ export type TDefinitions = {
 export type TCreateSchemaOptions = {
   resolvers?: Function[]
   rootTypes?: Function[]
+  schemaFile?: string
 }

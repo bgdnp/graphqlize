@@ -284,23 +284,24 @@ export class Generator {
 
     let inheritedFields = {}
 
-    const interfaces = this.definitions.types[typeName].interfaces.map(interfaceName => {
-      const interfaceType = this.getType({
-        name: interfaceName,
-        type: interfaceName,
-      }) as GraphQLInterfaceType
+    const interfaces = () =>
+      this.definitions.types[typeName].interfaces.map(interfaceName => {
+        const interfaceType = this.getType({
+          name: interfaceName,
+          type: interfaceName,
+        }) as GraphQLInterfaceType
 
-      inheritedFields = Object.values(interfaceType.getFields()).reduce((fields, field) => {
-        fields[field.name] = {
-          name: field.name,
-          type: field.type,
-        }
+        inheritedFields = Object.values(interfaceType.getFields()).reduce((fields, field) => {
+          fields[field.name] = {
+            name: field.name,
+            type: field.type,
+          }
 
-        return fields
-      }, inheritedFields)
+          return fields
+        }, inheritedFields)
 
-      return interfaceType
-    })
+        return interfaceType
+      })
 
     const fields = () =>
       Object.values(this.definitions.types[typeName].fields).reduce((fields, field) => {
