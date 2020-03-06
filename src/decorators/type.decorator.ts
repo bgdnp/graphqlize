@@ -1,11 +1,12 @@
 import { storage } from '../utilities/storage'
-import { TYPE_FIELDS_METADATA } from '../constants'
+import { TYPE_FIELDS_METADATA, OVERRIDE_NAME_METADATA } from '../constants'
 import { TFieldDefinitionsMap, TCreateTypeOptions } from '../typings'
 
 export function Type(nameOrOptions?: string | TCreateTypeOptions): ClassDecorator {
   return (constructorFn: any) => {
     const target = new constructorFn()
 
+    const overridesType = Reflect.getMetadata(OVERRIDE_NAME_METADATA, constructorFn)
     const ownFields: TFieldDefinitionsMap = Reflect.getMetadata(TYPE_FIELDS_METADATA, target) || {}
     let inheritedFields: TFieldDefinitionsMap = {}
 
@@ -21,10 +22,10 @@ export function Type(nameOrOptions?: string | TCreateTypeOptions): ClassDecorato
       name = nameOrOptions
       interfaces = []
     } else if (nameOrOptions && typeof nameOrOptions === 'object') {
-      name = nameOrOptions.name || constructorFn.name
+      name = nameOrOptions.name || overridesType || constructorFn.name
       interfaces = nameOrOptions.interfaces?.map(i => i.name) || []
     } else {
-      name = constructorFn.name
+      name = overridesType || constructorFn.name
       interfaces = []
     }
 
