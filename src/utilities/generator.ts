@@ -12,7 +12,6 @@ import {
   GraphQLNullableType,
   GraphQLList,
   GraphQLInterfaceType,
-  GraphQLObjectTypeConfig,
   GraphQLUnionType,
   GraphQLInputObjectType,
 } from 'graphql'
@@ -187,29 +186,13 @@ export class Generator {
       return
     }
 
-    let type: GraphQLNullableType
-
-    if (this.scalars[field.type]) {
-      type = this.scalars[field.type]
-    }
-
-    if (this.interfaces[field.type]) {
-      type = this.interfaces[field.type]
-    }
-
-    if (this.unions[field.type]) {
-      type = this.unions[field.type]
-    }
-
-    if (this.inputs[field.type]) {
-      type = this.inputs[field.type]
-    }
-
-    if (this.types[field.type]) {
-      type = this.types[field.type]
-    }
-
-    type = type || this.createObject(field.type)
+    const type: GraphQLNullableType =
+      this.scalars[field.type] ??
+      this.interfaces[field.type] ??
+      this.unions[field.type] ??
+      this.inputs[field.type] ??
+      this.types[field.type] ??
+      this.createObject(field.type)
 
     return this.processType(type, field.options)
   }
@@ -316,13 +299,11 @@ export class Generator {
         return fields
       }, inheritedFields)
 
-    const config: GraphQLObjectTypeConfig<any, any, any> = {
+    this.types[typeName] = new GraphQLObjectType({
       name: typeName,
       fields,
       interfaces,
-    }
-
-    this.types[typeName] = new GraphQLObjectType(config)
+    })
 
     delete this.inBuildingProcess[typeName]
 
@@ -352,21 +333,11 @@ export class Generator {
       return type
     }
 
-    let processedType: GraphQLNullableType
+    let processedType: GraphQLNullableType = options.isRequired ? GraphQLNonNull(type) : type
+    processedType = options.isList ? GraphQLList(processedType) : processedType
+    processedType = options.isList && options.isListRequired ? GraphQLNonNull(processedType) : processedType
 
-    if (options.isRequired) {
-      processedType = GraphQLNonNull(type)
-    }
-
-    if (options.isList) {
-      processedType = GraphQLList(processedType)
-
-      if (options.isListRequired) {
-        processedType = GraphQLNonNull(processedType)
-      }
-    }
-
-    return processedType || type
+    return processedType
   }
 
   private createTypes() {

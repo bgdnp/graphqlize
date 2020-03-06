@@ -4,7 +4,15 @@ import { TFieldDefinitionsMap, TCreateTypeOptions } from '../typings'
 
 export function Type(nameOrOptions?: string | TCreateTypeOptions): ClassDecorator {
   return (constructorFn: any) => {
-    const fields: TFieldDefinitionsMap = Reflect.getMetadata(TYPE_FIELDS_METADATA, new constructorFn()) || {}
+    const target = new constructorFn()
+
+    const ownFields: TFieldDefinitionsMap = Reflect.getMetadata(TYPE_FIELDS_METADATA, target) || {}
+    let inheritedFields: TFieldDefinitionsMap = {}
+
+    if (!!constructorFn.__proto__.name) {
+      const parent = new constructorFn.__proto__()
+      inheritedFields = Reflect.getMetadata(TYPE_FIELDS_METADATA, parent) || {}
+    }
 
     let name: string
     let interfaces: string[]
@@ -20,6 +28,10 @@ export function Type(nameOrOptions?: string | TCreateTypeOptions): ClassDecorato
       interfaces = []
     }
 
-    storage.addTypeDefinition({ name, fields, interfaces })
+    storage.addTypeDefinition({
+      name,
+      fields: { ...inheritedFields, ...ownFields },
+      interfaces,
+    })
   }
 }
