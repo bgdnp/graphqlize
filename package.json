@@ -11,7 +11,8 @@
   "scripts": {
     "build": "tsc",
     "dev": "ts-node dev.ts",
-    "test": "echo \"No tests yet.\" && exit 0"
+    "test": "echo \"No tests yet.\" && exit 0",
+    "prepublishOnly": "npm build"
   },
   "repository": {
     "type": "git",
