@@ -11,7 +11,7 @@
   "scripts": {
     "build": "rimraf dist && tsc",
     "build:dev": "rimraf dist && tsc --sourceMap",
-    "dev": "ts-node dev.ts",
+    "dev": "ts-node dev",
     "test": "echo \"No tests yet.\" && exit 0",
     "prepublishOnly": "npm run build"
   },

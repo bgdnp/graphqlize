@@ -9,9 +9,13 @@ Write your GraphQL schema in typescript
 - [Instalation](#instalation)
 - [Usage](#usage)
   - [Types](#types)
+    - [Extending types](#extending-types)
+    - [Overriding types](#overriding-types)
   - [Scalar types](#scalar-types)
   - [Interfaces](#interfaces)
+    - [Extending & overriding interfaces](#extending-&-overriding-interfaces)
   - [Unions](#unions)
+    - [Extending & overriding unions](#extending-&-overriding-unions)
   - [Resolvers](#resolvers)
     - [Resolver classes](#resolver-classes)
     - [Adding queries to resolver classes](#adding-queries-to-resolver-classes)
@@ -29,7 +33,8 @@ Graphqlize is a library which provides wrapper around [graphql](https://www.npmj
 
 This is the preliminary version of the package, so some things are not fully supported. This is the list of things currently in development:
 
-- Types inheritance
+- ~~Types inheritance~~
+- Creating custom scalar types
 - Subscriptions
 - More options for createSchema
 - Better error handling
@@ -136,6 +141,74 @@ numbers: Float[]
 // Will output: number: [Float!]
 ```
 
+#### Extending types
+
+Extending types is as simple as extending class. For example:
+
+```ts
+@Type()
+class User {
+  @Field()
+  name: string
+
+  @Field()
+  email: string
+}
+
+@Type()
+class UserExtended extends User {
+  @Field()
+  age: Int
+}
+```
+
+UserExtended will inherit all fields of type User and add (or override) fields. GraphQL schema will lokk like:
+
+```
+type User {
+  name: String!
+  email: String!
+}
+
+type UserExtended {
+  name: String!
+  email: String!
+  age: Int!
+}
+```
+
+#### Overriding types
+
+However if you want to completely override (replace) existing type with new type you can use `Overrides(Type)` decorator **bellow** the Type() decorator. Example:
+
+```ts
+@Type()
+class User {
+  @Field()
+  name: string
+
+  @Field()
+  email: string
+}
+
+@Type()
+@Overrides(User)
+class UserExtended extends User {
+  @Field()
+  age: Int
+}
+```
+
+GraphQL schema will look like this:
+
+```
+type User {
+  name: String!
+  email: String!
+  age: Int!
+}
+```
+
 ### Scalar types
 
 For string and boolean you can use native javascript classes String or Boolean as types, or just set field type as `string` or `boolean`. Since typescript provide just Number class and graphql use Int and Float types, @bgdn/graphqlize provides classes for those types and also for ID. Just import and use them.
@@ -207,6 +280,10 @@ Interfaces in graphql needs to resolve needs to be resolved to specific type. Us
 
 This is basic example. More about resolver methods in resolvers section.
 
+#### Extending & overriding interfaces
+
+Extending and overriding interaces works the same as for types.
+
 ### Unions
 
 Unions, unlike interfaces, can't contain fields, instead they just requires a list of types to include in a union. Like interfaces, unions need `@ResolveType()` decorated type resolver.
@@ -234,6 +311,10 @@ Unions, unlike interfaces, can't contain fields, instead they just requires a li
 > ```
 
 Besides types, Union configuration object can accept optional `name`. If name is ommited class name will be used.
+
+#### Extending & overriding unions
+
+Extending and overriding unions works the same as for types.
 
 ### Resolvers
 

@@ -23,7 +23,10 @@ export function Type(nameOrOptions?: string | TCreateTypeOptions): ClassDecorato
       interfaces = []
     } else if (nameOrOptions && typeof nameOrOptions === 'object') {
       name = nameOrOptions.name || overridesType || constructorFn.name
-      interfaces = nameOrOptions.interfaces?.map(i => i.name) || []
+      interfaces =
+        nameOrOptions.interfaces?.map(i => {
+          return Reflect.getMetadata(OVERRIDE_NAME_METADATA, i) || i.name
+        }) || []
     } else {
       name = overridesType || constructorFn.name
       interfaces = []

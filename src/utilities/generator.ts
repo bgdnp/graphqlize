@@ -352,5 +352,11 @@ export class Generator {
         this.createInterface(key)
       }
     }
+
+    for (let key in this.definitions.unions) {
+      if (!this.unions[key]) {
+        this.createUnion(key)
+      }
+    }
   }
 }
