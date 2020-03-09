@@ -1,5 +1,11 @@
 import { TFieldDefinitionsMap, TCreateFieldOptions, TParameter } from '../typings'
-import { TYPE_FIELDS_METADATA, PROPERTY_TYPE, PARAMETERS_METADATA, FUNCTION_RETURN_TYPE } from '../constants'
+import {
+  TYPE_FIELDS_METADATA,
+  PROPERTY_TYPE,
+  PARAMETERS_METADATA,
+  FUNCTION_RETURN_TYPE,
+  OVERRIDE_NAME_METADATA,
+} from '../constants'
 import { processQueryOptions } from '../helpers'
 
 export function Field(
@@ -15,8 +21,9 @@ export function Field(
     const parameters: TParameter[] = isResolverMethod
       ? Reflect.getOwnMetadata(PARAMETERS_METADATA, target, name)
       : undefined
+    const typeClass = Reflect.getOwnMetadata(metadataKey, target, name)
 
-    type = type || Reflect.getOwnMetadata(metadataKey, target, name).name
+    type = Reflect.getMetadata(OVERRIDE_NAME_METADATA, typeClass) || type || typeClass.name
     options = options || {
       isRequired: true,
       isList: false,
