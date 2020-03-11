@@ -1,6 +1,8 @@
 import 'reflect-metadata'
 
 export { Query } from './decorators/query.decorator'
+export { Mutation } from './decorators/mutation.decorator'
+export { Subscription } from './decorators/subscription.decorator'
 export { Param } from './decorators/param.decorator'
 export { Parent } from './decorators/parent.decorator'
 export { Context } from './decorators/context.decorator'

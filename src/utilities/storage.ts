@@ -20,6 +20,10 @@ class MetaDataStorage {
     name: 'Mutation',
     fields: {},
   }
+  private subscription: TQueryDefinition = {
+    name: 'Subscription',
+    fields: {},
+  }
 
   private types: TTypeDefinitionsMap = {}
   private interfaces: TInterfaceDefinitionsMap = {}
@@ -32,6 +36,10 @@ class MetaDataStorage {
 
   public addMutationField(field: TFieldDefinition): void {
     this.mutation.fields[field.name] = field
+  }
+
+  public addSubscriptionField(field: TFieldDefinition): void {
+    this.subscription.fields[field.name] = field
   }
 
   public addTypeDefinition(typeDefinition: TTypeDefinition): void {
@@ -62,6 +70,7 @@ class MetaDataStorage {
     return {
       query: this.query,
       mutation: this.mutation,
+      subscription: this.subscription,
       types: this.types,
       interfaces: this.interfaces,
       unions: this.unions,

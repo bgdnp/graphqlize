@@ -7,6 +7,7 @@ import { TInputDefinitionsMap } from './input'
 export type TDefinitions = {
   query: TQueryDefinition
   mutation: TQueryDefinition
+  subscription: TQueryDefinition
   types: TTypeDefinitionsMap
   interfaces: TInterfaceDefinitionsMap
   unions: TUnionDefinitionsMap

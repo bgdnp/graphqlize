@@ -24,6 +24,7 @@ export class Generator {
 
   private query: GraphQLObjectType
   private mutation: GraphQLObjectType
+  private subscription: GraphQLObjectType
   private scalars: { [name: string]: GraphQLScalarType } = {
     Boolean: GraphQLBoolean,
     Float: GraphQLFloat,
@@ -41,11 +42,13 @@ export class Generator {
 
     this.createQuery()
     this.createMutation()
+    this.createSubscription()
     this.createTypes()
 
     return new GraphQLSchema({
       query: this.query,
       mutation: this.mutation,
+      subscription: this.subscription,
       types: Object.values({
         ...this.types,
         ...this.interfaces,
@@ -92,8 +95,32 @@ export class Generator {
     })
   }
 
+  private createSubscription(): GraphQLObjectType {
+    if (Object.keys(this.definitions.subscription.fields).length === 0) {
+      return
+    }
+
+    const fields: any = {}
+
+    for (let name in this.definitions.subscription.fields) {
+      fields[name] = {
+        type: this.getType(this.definitions.subscription.fields[name]),
+        args: this.createQueryArguments(name),
+        subscribe: this.createQueryResolver(name),
+      }
+    }
+
+    this.subscription = new GraphQLObjectType({
+      name: this.definitions.subscription.name,
+      fields: () => fields,
+    })
+  }
+
   private createQueryArguments(fieldName: string) {
-    const definition = this.definitions.query.fields[fieldName] || this.definitions.mutation.fields[fieldName]
+    const definition =
+      this.definitions.query.fields[fieldName] ||
+      this.definitions.mutation.fields[fieldName] ||
+      this.definitions.subscription.fields[fieldName]
 
     return definition.parameters?.reduce((argsObject, param) => {
       if (param.kind === 'param') {
@@ -109,7 +136,10 @@ export class Generator {
 
   private createQueryResolver(fieldName: string) {
     return (parent, parameters, context, info) => {
-      const definition = this.definitions.query.fields[fieldName] || this.definitions.mutation.fields[fieldName]
+      const definition =
+        this.definitions.query.fields[fieldName] ||
+        this.definitions.mutation.fields[fieldName] ||
+        this.definitions.subscription.fields[fieldName]
 
       const parsedParams = definition.parameters?.map(param => {
         switch (param.kind) {
