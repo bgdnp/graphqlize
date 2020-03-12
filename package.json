@@ -6,7 +6,8 @@
   "files": [
     "LICENSE",
     "README.md",
-    "/dist"
+    "/dist",
+    "!/dist/tsconfig.tsbuildinfo"
   ],
   "scripts": {
     "build": "rimraf dist && tsc",
