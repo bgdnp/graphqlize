@@ -23,6 +23,7 @@ Write your GraphQL schema in typescript
     - [Field resolvers](#field-resolvers)
     - [Inline field resolvers](#inline-field-resolvers)
     - [Mutations](#mutations)
+    - [Subscriptions](#subscriptions)
   - [Building schema](#building-schema)
 
 ## Introduction
@@ -35,7 +36,7 @@ This is the preliminary version of the package, so some things are not fully sup
 
 - ~~Types inheritance~~
 - Creating custom scalar types
-- Subscriptions
+- ~~Subscriptions~~
 - More options for createSchema
 - Better error handling
 
@@ -442,6 +443,32 @@ However, inline resolvers are not recommended way of adding resolver functions.
 #### Mutations
 
 Mutations are defined same as queries. just use `@Mutation()` instead of `@Query()`
+
+#### Subscriptions
+
+Subscriptions are configured similar to queries and mutations, using `@Subscription()` decorator factory. But unlike queries and mutations, you cannot use function return type for specifying because subscriptions are supposed to return `AsyncIterator`. Let's check the example bellow:
+
+```ts
+@Resolver(User)
+export class UserResolver {
+  @Mutation()
+  addUser(@Param('user') user: UserInput, @Context() { pubsub }: any): User {
+    // add user to database
+    pubsub.publish('USER_ADDED', { userAdded: user })
+
+    return user
+  }
+
+  @Subscription(User)
+  userAdded(@Context() { pubsub }: any): AsyncIterator<User> {
+    return pubsub.asyncIterator('USER_ADDED')
+  }
+}
+```
+
+This example assumes that type `User` and input `UserInput` are defined. It also assumes that pubsub object is available withing context, but providing pubsub system is up to implementation.
+
+This example will create `userAdded` subscription which will be triggered when new user is added through `addUser` mutation.
 
 ### Building schema
 
