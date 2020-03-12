@@ -9,7 +9,8 @@
     "sourceMap": false,
     "outDir": "./dist",
     "baseUrl": "./",
-    "incremental": true
+    "incremental": true,
+    "tsBuildInfoFile": "./dev/.tsbuildinfo"
   },
   "exclude": ["node_modules", "dist", "dev"]
 }
