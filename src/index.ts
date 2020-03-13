@@ -16,6 +16,7 @@ export { Resolver } from './decorators/resolver.decorator'
 export { FieldResolver } from './decorators/field-resolver.decorator'
 export { ResolveType } from './decorators/resolve-type.decorator'
 export { Overrides } from './decorators/overrides.decorator'
+export { Scalar } from './decorators/scalar.decorator'
 
 export { createSchema } from './create-schema'
 

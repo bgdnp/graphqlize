@@ -6,7 +6,7 @@ export function FieldResolver(fieldName?: string): MethodDecorator {
 
     const fieldResolvers = Reflect.getOwnMetadata(FIELD_RESOLVERS_METADATA, target) || {}
 
-    fieldResolvers[fieldName] = target[name]
+    fieldResolvers[fieldName] = target[name].bind(target)
 
     Reflect.defineMetadata(FIELD_RESOLVERS_METADATA, fieldResolvers, target)
   }

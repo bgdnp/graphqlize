@@ -240,6 +240,10 @@ export class Generator {
       return this.createInput(name)
     }
 
+    if (this.definitions.scalars[name]) {
+      return this.createScalar(name)
+    }
+
     return this.createType(name)
   }
 
@@ -356,6 +360,12 @@ export class Generator {
     })
 
     return this.inputs[inputName]
+  }
+
+  private createScalar(scalarName: string): GraphQLNullableType {
+    this.scalars[scalarName] = new GraphQLScalarType(this.definitions.scalars[scalarName])
+
+    return this.scalars[scalarName]
   }
 
   private processType(type: GraphQLNullableType, options: TTypeOptions): GraphQLNullableType {

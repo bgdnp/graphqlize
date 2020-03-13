@@ -13,7 +13,7 @@ export function Query(typeOrOptions?: Function | [Function] | TCreateQueryOption
     storage.addQueryField({
       name: propertyKey,
       type: type,
-      resolver: target[propertyKey],
+      resolver: target[propertyKey].bind(target),
       parameters,
       options,
     })

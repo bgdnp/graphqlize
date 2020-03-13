@@ -12,7 +12,7 @@ export function Subscription(typeOrOptions: Function | [Function] | Required<TCr
     storage.addSubscriptionField({
       name: propertyKey,
       type: type,
-      resolver: target[propertyKey],
+      resolver: target[propertyKey].bind(target),
       parameters,
       options,
     })

@@ -13,7 +13,7 @@ export function Mutation(typeOrOptions?: Function | [Function] | TCreateQueryOpt
     storage.addMutationField({
       name: propertyKey,
       type: type,
-      resolver: target[propertyKey],
+      resolver: target[propertyKey].bind(target),
       parameters,
       options,
     })

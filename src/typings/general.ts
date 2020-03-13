@@ -3,6 +3,7 @@ import { TTypeDefinitionsMap } from './type'
 import { TInterfaceDefinitionsMap } from './interface'
 import { TUnionDefinitionsMap } from './union'
 import { TInputDefinitionsMap } from './input'
+import { TScalarDefinitionsMap } from './scalar'
 
 export type TDefinitions = {
   query: TQueryDefinition
@@ -12,6 +13,7 @@ export type TDefinitions = {
   interfaces: TInterfaceDefinitionsMap
   unions: TUnionDefinitionsMap
   inputs: TInputDefinitionsMap
+  scalars: TScalarDefinitionsMap
 }
 
 export type TCreateSchemaOptions = {

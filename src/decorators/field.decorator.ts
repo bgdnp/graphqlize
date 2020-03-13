@@ -17,7 +17,7 @@ export function Field(
     const fields: TFieldDefinitionsMap = Reflect.getMetadata(TYPE_FIELDS_METADATA, target) || {}
     const isResolverMethod: boolean = Boolean(descriptor && descriptor.value)
     const metadataKey: string = isResolverMethod ? FUNCTION_RETURN_TYPE : PROPERTY_TYPE
-    const resolver: Function = isResolverMethod ? target[name] : undefined
+    const resolver: Function = isResolverMethod ? target[name].bind(target) : undefined
     const parameters: TParameter[] = isResolverMethod
       ? Reflect.getOwnMetadata(PARAMETERS_METADATA, target, name)
       : undefined
